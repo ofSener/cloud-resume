@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Description: >
+  Root template for Cloud Resume Project. Orchestrates backend, website, and security stacks.
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: "Domain name for the website (e.g. example.com)"
+
+  HostedZoneId:
+    Type: String
+    Description: "Route53 HostedZone ID for DomainName"
+
+  CertificateArn:
+    Type: String
+    Description: "ACM certificate ARN in us-east-1 for CloudFront"
+
+  # Diğer parametreler (ör. IPSet parametreleri vb.) eklenebilir
+
+Resources:
+  BackendStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "https://BUCKET-NAME.s3.${AWS::Region}.amazonaws.com/path/to/backend.yaml"
+      Parameters:
+        DomainName: !Ref DomainName
+
+  WebsiteStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "https://BUCKET-NAME.s3.${AWS::Region}.amazonaws.com/path/to/website.yaml"
+      Parameters:
+        DomainName: !Ref DomainName
+        HostedZoneId: !Ref HostedZoneId
+        CertificateArn: !Ref CertificateArn
+
+  SecurityStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "https://BUCKET-NAME.s3.${AWS::Region}.amazonaws.com/path/to/security.yaml"
+      Parameters:
+        DomainName: !Ref DomainName
+
+Outputs:
+  BackendStackOutput:
+    Description: "Outputs from Backend stack"
+    Value: !GetAtt BackendStack.Outputs
+
+  WebsiteStackOutput:
+    Description: "Outputs from Website stack"
+    Value: !GetAtt WebsiteStack.Outputs
+
+  SecurityStackOutput:
+    Description: "Outputs from Security stack"
+    Value: !GetAtt SecurityStack.Outputs

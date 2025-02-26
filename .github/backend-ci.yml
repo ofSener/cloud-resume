@@ -1,0 +1,57 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install unittest-xml-reporting # optional for test reports
+
+      - name: Run tests
+        run: |
+          cd backend
+          python -m unittest discover -s tests
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Package and Deploy SAM (Nested Stacks)
+        run: |
+          cd iac
+          sam package \
+            --template-file main.yaml \
+            --s3-bucket ${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }} \
+            --output-template-file packaged.yaml
+
+          sam deploy \
+            --template-file packaged.yaml \
+            --stack-name cloud-resume-main-stack \
+            --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+            --parameter-overrides \
+              DomainName=${{ secrets.DOMAIN_NAME }} \
+              HostedZoneId=${{ secrets.HOSTED_ZONE_ID }} \
+              CertificateArn=${{ secrets.CERTIFICATE_ARN }} \
+            --region eu-central-1 \
+            --no-fail-on-empty-changeset

@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Website Stack - S3 for static site, CloudFront distribution, Route53 alias
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: "Domain name for the site (e.g. example.com)"
+
+  HostedZoneId:
+    Type: String
+    Description: "Hosted zone ID of the domain"
+
+  CertificateArn:
+    Type: String
+    Description: "ACM certificate ARN in us-east-1 for CloudFront HTTPS"
+
+Resources:
+  # 1) S3 Bucket (private, only CloudFront can read)
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${DomainName}-website-bucket"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+
+  # 2) Origin Access Identity
+  CloudFrontOAI:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: "OAI for Cloud Resume"
+
+  # 3) Bucket Policy (Allow read only from CloudFrontOAI)
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOAI.S3CanonicalUserId
+            Action: "s3:GetObject"
+            Resource: !Sub "${WebsiteBucket.Arn}/*"
+
+  # 4) CloudFront Distribution
+  WebsiteDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        HttpVersion: "http2"
+        DefaultRootObject: "index.html"
+        Aliases:
+          - !Ref DomainName
+        Origins:
+          - Id: "S3Origin"
+            DomainName: !GetAtt WebsiteBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOAI}"
+        DefaultCacheBehavior:
+          TargetOriginId: "S3Origin"
+          ViewerProtocolPolicy: "redirect-to-https"
+          AllowedMethods: ["GET", "HEAD"]
+          CachedMethods: ["GET", "HEAD"]
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+
+  # 5) Route53 Alias Record
+  WebsiteAliasRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt WebsiteDistribution.DomainName
+        HostedZoneId: !GetAtt WebsiteDistribution.HostedZoneId
+
+Outputs:
+  WebsiteURL:
+    Description: "CloudFront distribution domain"
+    Value: !GetAtt WebsiteDistribution.DomainName
+
+  S3BucketName:
+    Description: "S3 Bucket for website hosting"
+    Value: !Ref WebsiteBucket
