@@ -22,14 +22,14 @@ Resources:
   BackendStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub "https://BUCKET-NAME.s3.${AWS::Region}.amazonaws.com/path/to/backend.yaml"
+      TemplateURL: backend.yaml
       Parameters:
         DomainName: !Ref DomainName
 
   WebsiteStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub "https://BUCKET-NAME.s3.${AWS::Region}.amazonaws.com/path/to/website.yaml"
+      TemplateURL: backend.yaml
       Parameters:
         DomainName: !Ref DomainName
         HostedZoneId: !Ref HostedZoneId
@@ -38,7 +38,7 @@ Resources:
   SecurityStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub "https://BUCKET-NAME.s3.${AWS::Region}.amazonaws.com/path/to/security.yaml"
+      TemplateURL: backend.yaml
       Parameters:
         DomainName: !Ref DomainName
 
