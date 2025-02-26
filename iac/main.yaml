@@ -18,8 +18,6 @@ Parameters:
     Type: String
     Description: "ACM certificate ARN in us-east-1 for CloudFront"
 
-  # Diğer parametreler (ör. IPSet parametreleri vb.) eklenebilir
-
 Resources:
   BackendStack:
     Type: AWS::CloudFormation::Stack
@@ -45,14 +43,25 @@ Resources:
         DomainName: !Ref DomainName
 
 Outputs:
-  BackendStackOutput:
-    Description: "Outputs from Backend stack"
-    Value: !GetAtt BackendStack.Outputs
+  # Örnek: BackendStack çıktılarını okuma
+  DynamoDBTableName:
+    Description: "DynamoDB table name from backend"
+    Value: !GetAtt BackendStack.Outputs.DynamoDBTableName
 
-  WebsiteStackOutput:
-    Description: "Outputs from Website stack"
-    Value: !GetAtt WebsiteStack.Outputs
+  LambdaFunctionName:
+    Description: "Lambda function name from backend"
+    Value: !GetAtt BackendStack.Outputs.LambdaFunctionName
 
-  SecurityStackOutput:
-    Description: "Outputs from Security stack"
-    Value: !GetAtt SecurityStack.Outputs
+  # Örnek: Website stack çıktılarını okuma
+  WebsiteURL:
+    Description: "CloudFront domain from website stack"
+    Value: !GetAtt WebsiteStack.Outputs.WebsiteURL
+
+  WebsiteBucketName:
+    Description: "S3 Bucket for website from website stack"
+    Value: !GetAtt WebsiteStack.Outputs.S3BucketName
+
+  # Örnek: Security stack çıktılarını okuma
+  WAFArn:
+    Description: "ARN of WAF from security stack"
+    Value: !GetAtt SecurityStack.Outputs.WAFArn

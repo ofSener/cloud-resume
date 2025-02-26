@@ -74,10 +74,6 @@ Resources:
       Tags:
         Project: CloudResume
 
-  # 4) API Gateway Stage Ayarları (rate limiting vs.)
-  # SAM, "Events" üzerinden Api oluşturur ve varsayılan Stage ismini "Stage" vb. verebilir.
-  # Ayrıntılı stage config yapmak istersen AWS::Serverless::Api kaynağı kullanabilirsin.
-
 Outputs:
   DynamoDBTableName:
     Description: "Name of the DynamoDB table"

@@ -30,7 +30,8 @@ jobs:
         run: |
           cd backend
           pip install -r requirements.txt
-          pip install unittest-xml-reporting # optional for test reports
+          pip install pytest
+          # "unittest-xml-reporting" opsiyonel
 
       - name: Run tests
         run: |
