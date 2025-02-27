@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
+Description: >-
   Website CloudFront Stack
 
 Parameters:
@@ -9,10 +9,6 @@ Parameters:
   HostedZoneId:
     Type: String
   CertificateArn:
-    Type: String
-
-  # Bucket ve OAI ID'yi, Bucket Stack'ten alıyorsunuz
-  BucketName:
     Type: String
   BucketRegionalDomainName:
     Type: String
@@ -33,12 +29,16 @@ Resources:
           - Id: "S3Origin"
             DomainName: !Ref BucketRegionalDomainName
             S3OriginConfig:
-              # Artık OAI kaynağını stack içinde tanımlamıyoruz, parametreden gelen ID’yi kullanıyoruz.
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${OaiCanonicalUserId}"
         DefaultCacheBehavior:
           TargetOriginId: "S3Origin"
           ViewerProtocolPolicy: "redirect-to-https"
-          ...
+          AllowedMethods: ["GET", "HEAD"]
+          CachedMethods: ["GET", "HEAD"]
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
         ViewerCertificate:
           AcmCertificateArn: !Ref CertificateArn
           SslSupportMethod: sni-only
@@ -56,5 +56,5 @@ Resources:
 
 Outputs:
   DistributionDomainName:
+    Description: CloudFront Domain
     Value: !GetAtt WebsiteDistribution.DomainName
-  ...
