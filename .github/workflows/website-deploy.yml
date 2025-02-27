@@ -3,6 +3,8 @@ name: Website Deploy
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   deploy-website:
@@ -12,25 +14,19 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1  
+          aws-region: eu-central-1
 
-      - name: Sync to S3
+      - name: Sync website to S3
         run: |
           aws s3 sync website/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
 
-      - name: CloudFront Invalidate
+      - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} \
             --paths "/*"
-      - name: Update Lambda code
-        run: |
-          cd backend
-          zip -r lambda.zip lambda_function.py
-          aws lambda update-function-code --function-name CloudResumeBackend --zip-file fileb://lambda.zip
-

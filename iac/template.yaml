@@ -1,21 +1,24 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  Backend Stack - Contains the DynamoDB Table, Lambda function, 
-  and minimal IAM for the Cloud Resume Project.
+Description: Backend stack for Cloud Resume - Lambda + DDB + API Gateway
 
 Parameters:
-  DomainName:
+  TableName:
     Type: String
-    Description: "Domain name for CORS (e.g. example.com)"
-    Default: "example.com"
+    Default: "ZiyaretciSayaci"
+    Description: DynamoDB table name
+
+  AllowedOrigin:
+    Type: String
+    Default: "*"
+    Description: CORS Allowed Origin (e.g. https://example.com)
 
 Resources:
   # 1) DynamoDB Table
   VisitorCountTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: "ZiyaretciSayaci"
+      TableName: !Ref TableName
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: "visitorID"
@@ -24,11 +27,11 @@ Resources:
         - AttributeName: "visitorID"
           KeyType: "HASH"
 
-  # 2) IAM Role for Lambda (least privilege)
-  ResumeFunctionRole:
+  # 2) Lambda Execution Role
+  LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: "ResumeFunctionRole"
+      RoleName: !Sub "${AWS::StackName}-LambdaRole"
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -38,9 +41,8 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-        - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
       Policies:
-        - PolicyName: "DynamoDBAccessPolicy"
+        - PolicyName: DynamoDBAccess
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -52,37 +54,26 @@ Resources:
                 Resource: !GetAtt VisitorCountTable.Arn
 
   # 3) Lambda Function
-  ResumeVisitorFunction:
+  ResumeFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: "CloudResumeBackend"
+      FunctionName: !Sub "${AWS::StackName}-Lambda"
       Runtime: python3.9
       Handler: lambda_function.lambda_handler
-      CodeUri: ../backend
-      Role: !GetAtt ResumeFunctionRole.Arn
-      Tracing: Active   # X-Ray
+      CodeUri: ../backend   # lambda_function.py burada olsun (relatif path)
+      Role: !GetAtt LambdaExecutionRole.Arn
       Environment:
         Variables:
-          TABLE_NAME: !Ref VisitorCountTable
-          ALLOWED_ORIGIN: !Sub "https://${DomainName}"
+          TABLE_NAME: !Ref TableName
+          ALLOWED_ORIGIN: !Ref AllowedOrigin
       Events:
-        GetVisitorCount:
-          Type: Api
+        VisitorCountApi:
+          Type: HttpApi
           Properties:
             Path: /visitorcount
             Method: GET
-      Tags:
-        Project: CloudResume
-
-  # 4) API Gateway Stage Ayarları (rate limiting vs.)
-  # SAM, "Events" üzerinden Api oluşturur ve varsayılan Stage ismini "Stage" vb. verebilir.
-  # Ayrıntılı stage config yapmak istersen AWS::Serverless::Api kaynağı kullanabilirsin.
 
 Outputs:
-  DynamoDBTableName:
-    Description: "Name of the DynamoDB table"
-    Value: !Ref VisitorCountTable
-
-  LambdaFunctionName:
-    Description: "Name of the Lambda function"
-    Value: !Ref ResumeVisitorFunction
+  ApiEndpoint:
+    Description: "HTTP API endpoint for /visitorcount"
+    Value: !Sub "https://${ResumeFunction.ApiId}.execute-api.${AWS::Region}.amazonaws.com"

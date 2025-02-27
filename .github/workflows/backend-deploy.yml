@@ -1,0 +1,62 @@
+name: Backend Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Python & Install SAM
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+          pip install --upgrade pip
+          pip install aws-sam-cli
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Install Dependencies and Test (optional)
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install pytest
+          pytest
+
+      - name: Package SAM
+        run: |
+          cd iac
+          sam package \
+            --template-file template.yaml \
+            --s3-bucket "${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }}" \
+            --output-template-file packaged.yaml
+
+      - name: Deploy SAM
+        run: |
+          cd iac
+          sam deploy \
+            --template-file packaged.yaml \
+            --stack-name cloud-resume-backend-stack \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --region eu-central-1 \
+            --parameter-overrides \
+              TableName="ZiyaretciSayaci" \
+              AllowedOrigin="https://ofsener.com" \
+            --no-fail-on-empty-changeset
+
+      - name: Show Stack Outputs
+        run: |
+          aws cloudformation describe-stacks --stack-name cloud-resume-backend-stack \
+            --query 'Stacks[0].Outputs' --output table
