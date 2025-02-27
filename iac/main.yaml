@@ -39,7 +39,7 @@ Resources:
         DomainName: !Ref DomainName
         HostedZoneId: !Ref HostedZoneId
         CertificateArn: !Ref CertificateArn
-        BucketName: !GetAtt WebsiteBucketStack.Outputs.BucketName
+
         BucketRegionalDomainName: !GetAtt WebsiteBucketStack.Outputs.BucketRegionalDomainName
         OaiCanonicalUserId: !GetAtt WebsiteBucketStack.Outputs.OaiCanonicalUserId
 
