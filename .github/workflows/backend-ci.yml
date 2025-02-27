@@ -37,28 +37,10 @@ jobs:
           cd backend/tests
           pytest test_lambda_function.py
 
-      # 1) Security stack'i us-east-1'da deploy et
-      - name: Deploy Security Stack (WAF) to us-east-1
-        run: |
-          cd iac
-          sam package \
-            --template-file security.yaml \
-            --s3-bucket ${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }} \
-            --output-template-file security-packaged.yaml
-
-          sam deploy \
-            --template-file security-packaged.yaml \
-            --stack-name cloud-resume-security-stack \
-            --capabilities CAPABILITY_NAMED_IAM \
-            --region us-east-1 \
-            --parameter-overrides \
-              DomainName=${{ secrets.DOMAIN_NAME }} \
-            --no-fail-on-empty-changeset
-
-      # 2) Ana stack (backend + website) eu-central-1'da deploy et
+      # Deploy the Main Stack (includes Backend and Website stacks)
       - name: Deploy Main Stack to eu-central-1
         run: |
-          # kaldığımız yer: iac klasöründe
+          cd iac
           sam package \
             --template-file main.yaml \
             --s3-bucket ${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }} \

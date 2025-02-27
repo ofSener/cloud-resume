@@ -3,7 +3,7 @@ Transform:
   - AWS::Serverless-2016-10-31
 
 Description: >
-  Root template for Cloud Resume Project. Orchestrates backend, website, and security stacks.
+  Root template for Cloud Resume Project. Orchestrates backend and website stacks.
 
 Parameters:
   DomainName:
@@ -35,9 +35,8 @@ Resources:
         HostedZoneId: !Ref HostedZoneId
         CertificateArn: !Ref CertificateArn
 
-
 Outputs:
-  # Örnek: BackendStack çıktılarını okuma
+  # Example: Reading outputs from the backend stack
   DynamoDBTableName:
     Description: "DynamoDB table name from backend"
     Value: !GetAtt BackendStack.Outputs.DynamoDBTableName
@@ -46,7 +45,7 @@ Outputs:
     Description: "Lambda function name from backend"
     Value: !GetAtt BackendStack.Outputs.LambdaFunctionName
 
-  # Örnek: Website stack çıktılarını okuma
+  # Example: Reading outputs from the website stack
   WebsiteURL:
     Description: "CloudFront domain from website stack"
     Value: !GetAtt WebsiteStack.Outputs.WebsiteURL
@@ -54,8 +53,3 @@ Outputs:
   WebsiteBucketName:
     Description: "S3 Bucket for website from website stack"
     Value: !GetAtt WebsiteStack.Outputs.S3BucketName
-
-  # Örnek: Security stack çıktılarını okuma
-  WAFArn:
-    Description: "ARN of WAF from security stack"
-    Value: !GetAtt SecurityStack.Outputs.WAFArn
