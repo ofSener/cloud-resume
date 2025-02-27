@@ -1,23 +1,56 @@
-
-
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Website Bucket Stack - Creates an S3 bucket for static site hosting in eu-central-1.
+  Website Bucket Stack - Creates an S3 bucket for static site hosting in eu-central-1,
+  accessible only via CloudFront OAI.
 
 Parameters:
   DomainName:
     Type: String
     Description: "Domain name for the site (e.g. example.com)"
 
+  # Bu parametreyi, website-cloudfront.yaml içindeki CloudFrontOAI kaynağından
+  # S3CanonicalUserId çıktısı (Output) olarak alıp main.yaml üzerinden buraya geçebilirsiniz.
+  # Örnek için main.yaml'da:
+  #
+  #   WebsiteBucketStack:
+  #     Type: AWS::CloudFormation::Stack
+  #     Properties:
+  #       TemplateURL: website-bucket.yaml
+  #       Parameters:
+  #         DomainName: !Ref DomainName
+  #         OaiCanonicalUserId: !GetAtt WebsiteCloudFrontStack.Outputs.OaiCanonicalUserId
+  #
+  OaiCanonicalUserId:
+    Type: String
+    Description: "The S3CanonicalUserId from the CloudFront Origin Access Identity"
+
 Resources:
   WebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
+      # Bucket ismi: domain-website-bucket
       BucketName: !Sub "${DomainName}-website-bucket"
+      # Public access engelleniyor
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
+
+  # OAI'ye GET izni veren BucketPolicy
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontOAI
+            Effect: Allow
+            Principal:
+              # CloudFront OAI’nin “CanonicalUser” kimliği
+              CanonicalUser: !Ref OaiCanonicalUserId
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${WebsiteBucket}/*"
 
 Outputs:
   BucketName:
