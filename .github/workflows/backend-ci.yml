@@ -22,10 +22,6 @@ jobs:
       - name: Install AWS CLI & SAM CLI
         run: |
           sudo apt-get update
-          # AWS CLI v2 (bazı runnerlarda eksik olabiliyor)
-          sudo apt-get install -y awscli
-          # SAM CLI
-          pip install --upgrade pip
           pip install aws-sam-cli
 
       - name: Configure AWS credentials
