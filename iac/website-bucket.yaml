@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Website Bucket Stack - Creates an S3 bucket for static site hosting in eu-central-1.
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: "Domain name for the site (e.g. example.com)"
+
+Resources:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${DomainName}-website-bucket"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+
+Outputs:
+  BucketName:
+    Description: "Name of the S3 Bucket"
+    Value: !Ref WebsiteBucket
+
+  BucketRegionalDomainName:
+    Description: "Regional Domain Name of the S3 Bucket"
+    Value: !GetAtt WebsiteBucket.RegionalDomainName

@@ -1,53 +1,34 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Website Stack - S3 for static site, CloudFront distribution, Route53 alias
+  Website CloudFront Stack - Creates CloudFront distribution and Route53 alias in us-east-1.
 
 Parameters:
   DomainName:
     Type: String
     Description: "Domain name for the site (e.g. example.com)"
-
+  
   HostedZoneId:
     Type: String
     Description: "Hosted zone ID of the domain"
-
+  
   CertificateArn:
     Type: String
     Description: "ACM certificate ARN in us-east-1 for CloudFront HTTPS"
+  
+  BucketRegionalDomainName:
+    Type: String
+    Description: "S3 Bucket Regional Domain Name (output from the bucket stack)"
 
 Resources:
-  # 1) S3 Bucket (private, only CloudFront can read)
-  WebsiteBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "${DomainName}-website-bucket"
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-
-  # 2) Origin Access Identity
+  # CloudFront Origin Access Identity
   CloudFrontOAI:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Properties:
       CloudFrontOriginAccessIdentityConfig:
         Comment: "OAI for Cloud Resume"
 
-  # 3) Bucket Policy (Allow read only from CloudFrontOAI)
-  WebsiteBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref WebsiteBucket
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              CanonicalUser: !GetAtt CloudFrontOAI.S3CanonicalUserId
-            Action: "s3:GetObject"
-            Resource: !Sub "${WebsiteBucket.Arn}/*"
-
-  # 4) CloudFront Distribution
+  # CloudFront Distribution
   WebsiteDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -59,7 +40,7 @@ Resources:
           - !Ref DomainName
         Origins:
           - Id: "S3Origin"
-            DomainName: !GetAtt WebsiteBucket.RegionalDomainName
+            DomainName: !Ref BucketRegionalDomainName
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOAI}"
         DefaultCacheBehavior:
@@ -72,7 +53,7 @@ Resources:
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.2_2021
 
-  # 5) Route53 Alias Record
+  # Route53 Alias Record for CloudFront
   WebsiteAliasRecord:
     Type: AWS::Route53::RecordSet
     Properties:
@@ -84,10 +65,6 @@ Resources:
         HostedZoneId: !GetAtt WebsiteDistribution.HostedZoneId
 
 Outputs:
-  WebsiteURL:
+  DistributionDomainName:
     Description: "CloudFront distribution domain"
     Value: !GetAtt WebsiteDistribution.DomainName
-
-  S3BucketName:
-    Description: "S3 Bucket for website hosting"
-    Value: !Ref WebsiteBucket
