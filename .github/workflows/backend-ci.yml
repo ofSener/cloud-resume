@@ -1,4 +1,4 @@
-name: Backend CI/CD
+name: Build, Test, Deploy
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -32,28 +32,45 @@ jobs:
           pip install -r requirements.txt
           pip install pytest
 
-
       - name: Run tests
         run: |
           cd backend/tests
           pytest test_lambda_function.py
 
-      - name: Package and Deploy SAM (Nested Stacks)
+      # 1) Security stack'i us-east-1'da deploy et
+      - name: Deploy Security Stack (WAF) to us-east-1
         run: |
           cd iac
           sam package \
-            --template-file main.yaml \
+            --template-file security.yaml \
             --s3-bucket ${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }} \
-            --output-template-file packaged.yaml
+            --output-template-file security-packaged.yaml
 
           sam deploy \
-            --template-file packaged.yaml \
+            --template-file security-packaged.yaml \
+            --stack-name cloud-resume-security-stack \
+            --capabilities CAPABILITY_NAMED_IAM \
+            --region us-east-1 \
+            --parameter-overrides \
+              DomainName=${{ secrets.DOMAIN_NAME }} \
+            --no-fail-on-empty-changeset
+
+      # 2) Ana stack (backend + website) eu-central-1'da deploy et
+      - name: Deploy Main Stack to eu-central-1
+        run: |
+          # kaldığımız yer: iac klasöründe
+          sam package \
+            --template-file main.yaml \
+            --s3-bucket ${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }} \
+            --output-template-file main-packaged.yaml
+
+          sam deploy \
+            --template-file main-packaged.yaml \
             --stack-name cloud-resume-main-stack \
             --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+            --region eu-central-1 \
             --parameter-overrides \
               DomainName=${{ secrets.DOMAIN_NAME }} \
               HostedZoneId=${{ secrets.HOSTED_ZONE_ID }} \
               CertificateArn=${{ secrets.CERTIFICATE_ARN }} \
-            --region eu-central-1 \
             --no-fail-on-empty-changeset
-  

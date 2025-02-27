@@ -29,18 +29,12 @@ Resources:
   WebsiteStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: backend.yaml
+      TemplateURL: website.yaml
       Parameters:
         DomainName: !Ref DomainName
         HostedZoneId: !Ref HostedZoneId
         CertificateArn: !Ref CertificateArn
 
-  SecurityStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: backend.yaml
-      Parameters:
-        DomainName: !Ref DomainName
 
 Outputs:
   # Örnek: BackendStack çıktılarını okuma
