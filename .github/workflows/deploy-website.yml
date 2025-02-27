@@ -17,12 +17,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1  # veya hangi regionda bucket yarattıysanız
+          aws-region: eu-central-1  
 
       - name: Sync to S3
         run: |
           aws s3 sync website/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
-          # "website/" dizininde index.html ve diğer dosyalarınız olsun
 
       - name: CloudFront Invalidate
         run: |
@@ -31,6 +30,7 @@ jobs:
             --paths "/*"
       - name: Update Lambda code
         run: |
+          cd backend
           zip -r lambda.zip lambda_function.py
           aws lambda update-function-code --function-name CloudResumeBackend --zip-file fileb://lambda.zip
 
