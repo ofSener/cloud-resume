@@ -9,11 +9,9 @@ Parameters:
   DomainName:
     Type: String
     Description: "Domain name for the website (e.g. example.com)"
-
   HostedZoneId:
     Type: String
     Description: "Route53 HostedZone ID for DomainName"
-
   CertificateArn:
     Type: String
     Description: "ACM certificate ARN in us-east-1 for CloudFront"
@@ -26,17 +24,24 @@ Resources:
       Parameters:
         DomainName: !Ref DomainName
 
-  WebsiteStack:
+  WebsiteBucketStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: website.yaml
+      TemplateURL: website-bucket.yaml
+      Parameters:
+        DomainName: !Ref DomainName
+
+  WebsiteCloudFrontStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: website-cloudfront.yaml
       Parameters:
         DomainName: !Ref DomainName
         HostedZoneId: !Ref HostedZoneId
         CertificateArn: !Ref CertificateArn
+        BucketRegionalDomainName: !GetAtt WebsiteBucketStack.Outputs.BucketRegionalDomainName
 
 Outputs:
-  # Example: Reading outputs from the backend stack
   DynamoDBTableName:
     Description: "DynamoDB table name from backend"
     Value: !GetAtt BackendStack.Outputs.DynamoDBTableName
@@ -45,11 +50,10 @@ Outputs:
     Description: "Lambda function name from backend"
     Value: !GetAtt BackendStack.Outputs.LambdaFunctionName
 
-  # Example: Reading outputs from the website stack
   WebsiteURL:
-    Description: "CloudFront domain from website stack"
-    Value: !GetAtt WebsiteStack.Outputs.WebsiteURL
+    Description: "CloudFront distribution domain from website cloudfront stack"
+    Value: !GetAtt WebsiteCloudFrontStack.Outputs.DistributionDomainName
 
   WebsiteBucketName:
-    Description: "S3 Bucket for website from website stack"
-    Value: !GetAtt WebsiteStack.Outputs.S3BucketName
+    Description: "S3 Bucket name from website bucket stack"
+    Value: !GetAtt WebsiteBucketStack.Outputs.BucketName
