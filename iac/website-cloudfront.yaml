@@ -48,6 +48,10 @@ Resources:
           ViewerProtocolPolicy: "redirect-to-https"
           AllowedMethods: ["GET", "HEAD"]
           CachedMethods: ["GET", "HEAD"]
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
         ViewerCertificate:
           AcmCertificateArn: !Ref CertificateArn
           SslSupportMethod: sni-only
