@@ -29,3 +29,8 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} \
             --paths "/*"
+      - name: Update Lambda code
+        run: |
+          zip -r lambda.zip lambda_function.py
+          aws lambda update-function-code --function-name CloudResumeBackend --zip-file fileb://lambda.zip
+
