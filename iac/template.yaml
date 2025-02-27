@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Backend stack for Cloud Resume - Lambda + DDB + API Gateway
+Description: Backend stack for Cloud Resume - Lambda + DynamoDB + HTTP API
 
 Parameters:
   TableName:
@@ -11,10 +11,10 @@ Parameters:
   AllowedOrigin:
     Type: String
     Default: "*"
-    Description: CORS Allowed Origin (e.g. https://example.com)
+    Description: CORS Allowed Origin 
 
 Resources:
-  # 1) DynamoDB Table
+  # DynamoDB Tablosu
   VisitorCountTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -27,7 +27,7 @@ Resources:
         - AttributeName: "visitorID"
           KeyType: "HASH"
 
-  # 2) Lambda Execution Role
+  # Lambda için IAM Rolü
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -53,14 +53,14 @@ Resources:
                   - dynamodb:PutItem
                 Resource: !GetAtt VisitorCountTable.Arn
 
-  # 3) Lambda Function
+  # Lambda Fonksiyonu
   ResumeFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub "${AWS::StackName}-Lambda"
       Runtime: python3.9
       Handler: lambda_function.lambda_handler
-      CodeUri: ../backend   # lambda_function.py burada olsun (relatif path)
+      CodeUri: ../backend   # lambda_function.py, backend klasörü altında olsun
       Role: !GetAtt LambdaExecutionRole.Arn
       Environment:
         Variables:
@@ -72,8 +72,27 @@ Resources:
           Properties:
             Path: /visitorcount
             Method: GET
+            ApiId: !Ref VisitorCountHttpApi
+
+  # HTTP API Kaynağı
+  VisitorCountHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: Prod
+      CorsConfiguration:
+        AllowOrigins: 
+          - !Ref AllowedOrigin
+        AllowMethods:
+          - GET
+          - OPTIONS
 
 Outputs:
   ApiEndpoint:
     Description: "HTTP API endpoint for /visitorcount"
-    Value: !Sub "https://${ResumeFunction.ApiId}.execute-api.${AWS::Region}.amazonaws.com"
+    Value: !Sub "https://${VisitorCountHttpApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+  DynamoDBTableName:
+    Description: "Name of the DynamoDB table"
+    Value: !Ref VisitorCountTable
+  LambdaFunctionName:
+    Description: "Name of the Lambda function"
+    Value: !Ref ResumeFunction
