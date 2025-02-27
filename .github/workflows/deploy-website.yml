@@ -1,4 +1,4 @@
-name: Website CI/CD
+name: Website Deploy
 
 on:
   push:
@@ -9,24 +9,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out source
+      - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
+          aws-region: eu-central-1  # veya hangi regionda bucket yarattıysanız
 
-      - name: Sync website to S3
+      - name: Sync to S3
         run: |
-          # S3 bucket name from CloudFormation output or secret
-          aws s3 sync website s3://${{ secrets.S3_BUCKET_NAME }} \
-            --delete \
-            --exclude ".github/*"
+          aws s3 sync website/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
+          # "website/" dizininde index.html ve diğer dosyalarınız olsun
 
-      - name: Invalidate CloudFront
+      - name: CloudFront Invalidate
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} \
