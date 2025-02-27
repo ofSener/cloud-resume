@@ -19,6 +19,12 @@ jobs:
         with:
           python-version: "3.9"
 
+      - name: Install AWS CLI & SAM CLI
+        run: |
+          # SAM CLI
+          pip install --upgrade pip
+          pip install aws-sam-cli
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -26,26 +32,36 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      - name: Install dependencies
+      - name: Install Dependencies and Test
         run: |
           cd backend
           pip install -r requirements.txt
           pip install pytest
-
-      - name: Run tests
-        run: |
-          cd backend/tests
+          cd tests
           pytest test_lambda_function.py
 
-      # Deploy the Main Stack (includes Backend and Website stacks)
-      - name: Deploy Main Stack to eu-central-1
+      - name: Ensure Deployment Artifacts Bucket Exists
+        run: |
+          # Eğer bucket yoksa oluşturuyoruz. 
+          # Bucket global unique olmalı; bu yüzden secrets’te benzersiz bir isim tutun.
+          if ! aws s3api head-bucket --bucket "${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }}" 2>/dev/null; then
+            echo "Bucket does not exist. Creating..."
+            aws s3 mb "s3://${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }}" --region eu-central-1
+          else
+            echo "Bucket exists, continuing..."
+          fi
+
+      - name: Package SAM
         run: |
           cd iac
           sam package \
             --template-file main.yaml \
-            --s3-bucket ${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }} \
+            --s3-bucket "${{ secrets.DEPLOYMENT_ARTIFACTS_BUCKET }}" \
             --output-template-file main-packaged.yaml
 
+      - name: Deploy Main Stack
+        run: |
+          cd iac
           sam deploy \
             --template-file main-packaged.yaml \
             --stack-name cloud-resume-main-stack \

@@ -30,6 +30,7 @@ Resources:
       TemplateURL: website-bucket.yaml
       Parameters:
         DomainName: !Ref DomainName
+        OaiCanonicalUserId: !GetAtt WebsiteCloudFrontStack.Outputs.OaiCanonicalUserId
 
   WebsiteCloudFrontStack:
     Type: AWS::CloudFormation::Stack
