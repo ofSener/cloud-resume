@@ -124,7 +124,7 @@ function initThemeToggle() {
   const savedTheme = localStorage.getItem('theme');
   
   // Set initial theme based on saved preference or OS preference
-  if (savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches)) {
+  if (savedTheme === 'dark') {
     document.documentElement.setAttribute('data-theme', 'dark');
     themeIcon.classList.remove('fa-moon');
     themeIcon.classList.add('fa-sun');
