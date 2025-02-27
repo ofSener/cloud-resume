@@ -30,7 +30,6 @@ Resources:
       TemplateURL: website-bucket.yaml
       Parameters:
         DomainName: !Ref DomainName
-        OaiCanonicalUserId: !GetAtt WebsiteCloudFrontStack.Outputs.OaiCanonicalUserId
 
   WebsiteCloudFrontStack:
     Type: AWS::CloudFormation::Stack
@@ -40,7 +39,9 @@ Resources:
         DomainName: !Ref DomainName
         HostedZoneId: !Ref HostedZoneId
         CertificateArn: !Ref CertificateArn
+        BucketName: !GetAtt WebsiteBucketStack.Outputs.BucketName
         BucketRegionalDomainName: !GetAtt WebsiteBucketStack.Outputs.BucketRegionalDomainName
+        OaiCanonicalUserId: !GetAtt WebsiteBucketStack.Outputs.OaiCanonicalUserId
 
 Outputs:
   DynamoDBTableName:

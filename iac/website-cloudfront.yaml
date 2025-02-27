@@ -1,34 +1,25 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Website CloudFront Stack - Creates CloudFront distribution and Route53 alias in us-east-1.
+  Website CloudFront Stack
 
 Parameters:
   DomainName:
     Type: String
-    Description: "Domain name for the site (e.g. example.com)"
-  
   HostedZoneId:
     Type: String
-    Description: "Hosted zone ID of the domain"
-  
   CertificateArn:
     Type: String
-    Description: "ACM certificate ARN in us-east-1 for CloudFront HTTPS"
-  
+
+  # Bucket ve OAI ID'yi, Bucket Stack'ten alıyorsunuz
+  BucketName:
+    Type: String
   BucketRegionalDomainName:
     Type: String
-    Description: "S3 Bucket Regional Domain Name (output from the bucket stack)"
+  OaiCanonicalUserId:
+    Type: String
 
 Resources:
-  # CloudFront Origin Access Identity
-  CloudFrontOAI:
-    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-    Properties:
-      CloudFrontOriginAccessIdentityConfig:
-        Comment: "OAI for Cloud Resume"
-
-  # CloudFront Distribution
   WebsiteDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -42,22 +33,17 @@ Resources:
           - Id: "S3Origin"
             DomainName: !Ref BucketRegionalDomainName
             S3OriginConfig:
-              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOAI}"
+              # Artık OAI kaynağını stack içinde tanımlamıyoruz, parametreden gelen ID’yi kullanıyoruz.
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${OaiCanonicalUserId}"
         DefaultCacheBehavior:
           TargetOriginId: "S3Origin"
           ViewerProtocolPolicy: "redirect-to-https"
-          AllowedMethods: ["GET", "HEAD"]
-          CachedMethods: ["GET", "HEAD"]
-          ForwardedValues:
-            QueryString: false
-            Cookies:
-              Forward: none
+          ...
         ViewerCertificate:
           AcmCertificateArn: !Ref CertificateArn
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.2_2021
 
-  # Route53 Alias Record for CloudFront
   WebsiteAliasRecord:
     Type: AWS::Route53::RecordSet
     Properties:
@@ -70,5 +56,5 @@ Resources:
 
 Outputs:
   DistributionDomainName:
-    Description: "CloudFront distribution domain"
     Value: !GetAtt WebsiteDistribution.DomainName
+  ...
