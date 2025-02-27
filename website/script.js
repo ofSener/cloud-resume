@@ -1,4 +1,4 @@
-const apiEndpoint = "https://1g8odqtrnb.execute-api.eu-central-1.amazonaws.com/visitors";
+const apiEndpoint = "https://t3115glt5c.execute-api.eu-central-1.amazonaws.com/Prod/visitorcount";
 
 document.addEventListener("DOMContentLoaded", () => {
   fetch(apiEndpoint)
