@@ -1,6 +1,7 @@
 # Cloud Resume Challenge
 
-## Visit ofsener.com
+## Visit [ofsener.com](https://ofsener.com)
+
 ## Introduction
 
 **Cloud Resume Challenge** is a hands-on project designed to showcase your cloud skills by building a modern, serverless resume website using AWS services. This project leverages AWS Lambda, API Gateway, DynamoDB, S3, CloudFront, and CloudFormation (via SAM) to create a fully automated, scalable, and secure solution. Whether you're looking to demonstrate your technical expertise or learn cutting-edge cloud deployment techniques, this challenge is a great way to enhance your portfolio.
