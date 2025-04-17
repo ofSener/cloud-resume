@@ -1,166 +1,65 @@
-const apiEndpoint = "https://t3115glt5c.execute-api.eu-central-1.amazonaws.com/Prod/visitorcount";
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Ziyaretçi sayacını yükle
-  fetchVisitorCount();
-   // Sayfa yükleme animasyonu
-  initPageLoader();
-  // Animasyonları etkinleştir
-  animateOnScroll();
-
-  // Dark mode toggle
-  initThemeToggle();
-  // Smooth scroll yönlendirmeleri için
-  setupSmoothScrolling();
+/* === THEME TOGGLE === */
+const themeBtn = document.getElementById('theme-toggle');
+themeBtn.addEventListener('click', () => {
+  const root = document.documentElement;
+  root.toggleAttribute('data-theme', root.hasAttribute('data-theme') ? null : 'dark');
 });
 
-function fetchVisitorCount() {
-  const countSpan = document.getElementById("visitor-count");
-  
-  // Başlangıç yükleniyor animasyonu
-  if (countSpan) {
-    countSpan.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+/* === PAGE LOADER FADE OUT === */
+window.addEventListener('load', () => {
+  document.querySelector('.page-loader').classList.add('loaded');
+});
+
+/* === VISITOR COUNTER (existing Lambda API) === */
+/*  !!! URL'yi kendi API Gateway uç noktanla değiştir !!!  */
+const COUNTER_API = 'https://<your-api-id>.execute-api.<region>.amazonaws.com/prod/visitor';
+
+fetch(COUNTER_API, { method: 'GET' })
+  .then(res => res.json())
+  .then(data => {
+    // Cloud‑Resume pattern => { "visitor": 123 }
+    document.getElementById('visitor-count').textContent = data.visitor ?? data;
+  })
+  .catch(() => document.getElementById('visitor-count').textContent = '—');
+
+/* === DYNAMIC PORTFOLIO GRID === */
+const projects = [
+  {
+    title: 'AI Prompt Hub',
+    desc: 'Multi‑agent prompt marketplace built with Next.js + LangGraph',
+    img: 'assets/prompt-hub.png',
+    stack: ['Next.js', 'LangGraph', 'AWS Lambda'],
+    url: 'https://github.com/ofSener/ai-prompt-hub'
+  },
+  {
+    title: 'Serverless Limit Calculator',
+    desc: 'Scales to 1 K users for < $1/month',
+    img: 'assets/limit-calc.png',
+    stack: ['API Gateway', 'Step Functions', 'Go'],
+    url: 'https://limit-calc.dev'
+  },
+  {
+    title: 'Cloud Resume Challenge',
+    desc: 'Static website with serverless backend (this site)',
+    img: 'assets/crc.png',
+    stack: ['S3', 'CloudFront', 'Lambda', 'DynamoDB'],
+    url: 'https://github.com/ofSener/cloud-resume'
   }
-  
-  fetch(apiEndpoint)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      console.log("API Response:", data);
-      
-      if (!countSpan) {
-        console.error("Error: HTML element with id='visitor-count' not found!");
-        return;
-      }
-      
-      if (data.visitorCount === undefined) {
-        console.error("Error: 'visitorCount' missing in API response!");
-        countSpan.innerText = "Error loading count";
-        return;
-      }
-      
-      // Numarayı animasyonla göster
-      animateCounter(countSpan, data.visitorCount);
-    })
-    .catch((err) => {
-      console.error("Error fetching visitor count:", err);
-      if (countSpan) {
-        countSpan.innerText = "Unable to load count";
-      }
-    });
-}
+];
 
-function animateCounter(element, targetCount) {
-  // Basit bir sayaç animasyonu
-  let currentCount = 0;
-  const duration = 1000; // milisaniye
-  const step = targetCount / (duration / 16);
-  
-  const updateCount = () => {
-    currentCount += step;
-    
-    if (currentCount >= targetCount) {
-      element.textContent = targetCount;
-      return;
-    }
-    
-    element.textContent = Math.floor(currentCount);
-    requestAnimationFrame(updateCount);
-  };
-  
-  requestAnimationFrame(updateCount);
-}
-
-function animateOnScroll() {
-  // IntersectionObserver kullanarak scroll'da animasyonları etkinleştir
-  const sections = document.querySelectorAll('section');
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {
-    threshold: 0.1
-  });
-  
-  sections.forEach(section => {
-    observer.observe(section);
-  });
-}
-
-function setupSmoothScrolling() {
-  // Navigasyon bağlantıları için smooth scroll
-  document.querySelectorAll('nav a').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      const targetId = this.getAttribute('href');
-      const targetElement = document.querySelector(targetId);
-      
-      if (targetElement) {
-        window.scrollTo({
-          top: targetElement.offsetTop - 70, // Nav yüksekliği için offset
-          behavior: 'smooth'
-        });
-      }
-    });
-  });
-}
-
-// Dark mode toggling
-function initThemeToggle() {
-  const themeToggle = document.getElementById('theme-toggle');
-  const themeIcon = themeToggle.querySelector('i');
-  
-  // Check for saved theme preference or respect OS preference
-  const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-  const savedTheme = localStorage.getItem('theme');
-  
-  // Set initial theme based on saved preference or OS preference
-  if (savedTheme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    themeIcon.classList.remove('fa-moon');
-    themeIcon.classList.add('fa-sun');
-  } else {
-    document.documentElement.setAttribute('data-theme', 'light');
-    themeIcon.classList.remove('fa-sun');
-    themeIcon.classList.add('fa-moon');
-  }  // Toggle theme when button is clicked
-  themeToggle.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    let newTheme;
-    
-    if (currentTheme === 'light') {
-      newTheme = 'dark';
-      themeIcon.classList.remove('fa-moon');
-      themeIcon.classList.add('fa-sun');
-    } else {
-      newTheme = 'light';
-      themeIcon.classList.remove('fa-sun');
-      themeIcon.classList.add('fa-moon');
-    }
-    
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-  });
-}
-// Sayfa yükleme animasyonu
-function initPageLoader() {
-  const loader = document.querySelector('.page-loader');
-  const content = document.querySelector('.content-container');
-  
-  window.addEventListener('load', () => {
-    // Tüm kaynaklar yüklendiğinde loader'ı gizle
-    setTimeout(() => {
-      loader.classList.add('loaded');
-      content.classList.add('visible');
-    }, 500);
-  });
-}
+const grid = document.getElementById('portfolio-grid');
+projects.forEach(p => {
+  grid.insertAdjacentHTML('beforeend', `
+    <div class="project-card">
+      <img src="${p.img}" alt="${p.title} screenshot" loading="lazy">
+      <h4>${p.title}</h4>
+      <p>${p.desc}</p>
+      <div class="tech-stack">
+        ${p.stack.map(t => `<span class="tech-badge">${t}</span>`).join('')}
+      </div>
+      <a href="${p.url}" class="project-link" target="_blank" rel="noopener">
+        Details <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  `);
+});
