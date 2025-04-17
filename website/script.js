@@ -11,8 +11,7 @@ window.addEventListener('load', () => {
 });
 
 /* === VISITOR COUNTER (existing Lambda API) === */
-/*  !!! URL'yi kendi API Gateway uç noktanla değiştir !!!  */
-const COUNTER_API = 'https://<your-api-id>.execute-api.<region>.amazonaws.com/prod/visitor';
+const COUNTER_API = 'https://t3115glt5c.execute-api.eu-central-1.amazonaws.com/Prod/visitorcount';
 
 fetch(COUNTER_API, { method: 'GET' })
   .then(res => res.json())
