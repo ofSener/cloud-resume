@@ -2,183 +2,270 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="description" content="Cloud Resume - Ömer Faruk Şener" />
+  <meta name="description" content="Ömer Faruk Şener | Portfolio" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ömer Faruk Şener | Cloud Engineer</title>
   
-  <!-- Font Import (Inter font) -->
+  <!-- Font Import (SF Pro Text-inspired fonts) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link 
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" 
-    rel="stylesheet"
-  >
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Font Awesome Icons (CDN link) -->
-  <link 
-    rel="stylesheet" 
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  >
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Page Loader (shown until resources load) -->
-  <div class="page-loader">
+  <!-- Page Loader -->
+  <div class="loader-container">
     <div class="loader"></div>
   </div>
-  <!-- HEADER SECTION -->
-  <header>
-    <div class="container">
-      <h1>Ömer Faruk Şener</h1>
-      <h2>Future Aspiring Cloud Engineer</h2>
+
+  <div class="app-container">
+    <!-- Navigation -->
+    <nav>
+      <div class="logo">ÖFS</div>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button id="theme-toggle" aria-label="Toggle dark mode">
+        <i class="fas fa-moon"></i>
+      </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+      <div class="hero-content">
+        <h1>Ömer Faruk Şener</h1>
+        <h2>Future Aspiring Cloud Engineer</h2>
+        <div class="hero-cta">
+          <a href="#contact" class="btn btn-primary">Get in touch</a>
+          <a href="#projects" class="btn btn-secondary">View projects</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section-container">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h3>About Me</h3>
+      </div>
+      <div class="section-content about-content">
+        <div class="about-text">
+          <p class="highlight-text">"I'm a 'human computer': when there's a problem, my mind compiles solutions faster than you can say 'Hello World!'"</p>
+          <p>Motivated and detail-oriented professional with a strong background in network engineering and a passion for cloud computing. Currently expanding my expertise in AWS, DevOps, and serverless architectures through hands-on projects and continuous learning. I excel at optimizing system performance and finding innovative solutions to complex technical challenges.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="section-container">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h3>Technical Skills</h3>
+      </div>
+      <div class="section-content">
+        <div class="skills-grid">
+          <div class="skill-card">
+            <i class="fab fa-aws"></i>
+            <span>AWS Services</span>
+          </div>
+          <div class="skill-card">
+            <i class="fas fa-cloud"></i>
+            <span>Cloud Infrastructure</span>
+          </div>
+          <div class="skill-card">
+            <i class="fas fa-network-wired"></i>
+            <span>Network Design</span>
+          </div>
+          <div class="skill-card">
+            <i class="fab fa-python"></i>
+            <span>Python</span>
+          </div>
+          <div class="skill-card">
+            <i class="fab fa-cuttlefish"></i>
+            <span>C/C++</span>
+          </div>
+          <div class="skill-card">
+            <i class="fab fa-golang"></i>
+            <span>Golang</span>
+          </div>
+          <div class="skill-card">
+            <i class="fas fa-code"></i>
+            <span>Lisp & Prolog</span>
+          </div>
+          <div class="skill-card">
+            <i class="fab fa-html5"></i>
+            <span>HTML/CSS</span>
+          </div>
+          <div class="skill-card">
+            <i class="fab fa-github-alt"></i>
+            <span>CI/CD</span>
+          </div>
+          <div class="skill-card">
+            <i class="fas fa-puzzle-piece"></i>
+            <span>Problem-Solving</span>
+          </div>
+          <div class="skill-card">
+            <i class="fas fa-users"></i>
+            <span>Team Collaboration</span>
+          </div>
+          <div class="skill-card">
+            <i class="fas fa-headset"></i>
+            <span>Technical Support</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="section-container">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h3>Experience</h3>
+      </div>
+      <div class="section-content">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <h4>Network Implementation & Support Engineer</h4>
+                <span class="timeline-date">2017 - Present</span>
+              </div>
+              <div class="timeline-company">AkbimNet</div>
+              <ul class="timeline-details">
+                <li>Spearheaded the design and deployment of a newly acquired ISP's network infrastructure, growing the customer base from 20 to over 2,000.</li>
+                <li>Implemented performance optimization strategies that increased network reliability by 30% and reduced downtime incidents.</li>
+                <li>Provided direct technical support to end users, resolving an average of 30 complex network issues weekly.</li>
+                <li>Collaborated with cross-functional teams to design and implement scalable network solutions.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <h4>Summer Intern</h4>
+                <span class="timeline-date">Summer 2022</span>
+              </div>
+              <div class="timeline-company">MayaICT</div>
+              <ul class="timeline-details">
+                <li>Developed proficiency in advanced computer networking concepts and protocols.</li>
+                <li>Designed and implemented a TCP/IP server project from concept to deployment.</li>
+                <li>Created and delivered a professional sales presentation for Palo Alto firewall solutions.</li>
+                <li>Participated in team-based troubleshooting and problem-solving scenarios.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="section-container">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h3>Education</h3>
+      </div>
+      <div class="section-content">
+        <div class="education-card">
+          <div class="education-icon">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div class="education-details">
+            <h4>Gebze Technical University</h4>
+            <p>B.Sc. in Computer Engineering</p>
+            <span class="education-date">2025 (Expected)</span>
+          </div>
+        </div>
+        <div class="certifications">
+          <h4>Certifications</h4>
+          <div class="certification-list" id="certification-list">
+            <div class="certification-item">
+              <i class="fab fa-aws"></i>
+              <span>AWS Certified Cloud Practitioner (in progress)</span>
+            </div>
+            <div class="certification-item">
+              <i class="fas fa-shield-alt"></i>
+              <span>CyberSecurity for Everyone</span>
+            </div>
+            <div class="certification-item">
+              <i class="fas fa-lock"></i>
+              <span>Usable Security</span>
+            </div>
+            <!-- LinkedIn certifications will be added here -->
+          </div>
+          <div class="linkedin-badge">
+            <p class="linkedin-info">View my complete credentials on <a href="https://linkedin.com/in/omerfaruksener" target="_blank">LinkedIn <i class="fab fa-linkedin"></i></a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section-container">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h3>Projects</h3>
+      </div>
+      <div class="section-content">
+        <div id="projects-container" class="projects-grid">
+          <!-- Projects will be populated by script -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section-container">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h3>Contact</h3>
+      </div>
+      <div class="section-content contact-content">
+        <div class="contact-card">
+          <a href="mailto:sener00omerfaruk@gmail.com">
+            <i class="fas fa-envelope"></i>
+            <span>Send me an email</span>
+          </a>
+        </div>
+        <div class="contact-card">
+          <a href="https://www.linkedin.com/in/omerfaruksener/" target="_blank">
+            <i class="fab fa-linkedin"></i>
+            <span>omerfaruksener</span>
+          </a>
+        </div>
+        <div class="contact-card">
+          <a href="https://github.com/ofSener" target="_blank">
+            <i class="fab fa-github"></i>
+            <span>ofSener</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visitor Counter -->
+    <div class="visitor-counter">
+      <p>You are visitor <span id="visitor-count">Loading...</span></p>
     </div>
-  </header>
-  <!-- Theme Toggle Button -->
-  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
-    <i class="fas fa-moon"></i>
-  </button>
-  <!-- NAVIGATION -->
-  <nav>
-    <ul>
-      <li><a href="#about"><i class="fas fa-user"></i> About</a></li>
-      <li><a href="#skills"><i class="fas fa-code"></i> Skills</a></li>
-      <li><a href="#experience"><i class="fas fa-briefcase"></i> Experience</a></li>
-      <li><a href="#education"><i class="fas fa-graduation-cap"></i> Education</a></li>
-      <li><a href="#certifications"><i class="fas fa-certificate"></i> Certifications</a></li>
-      <li><a href="#projects"><i class="fas fa-laptop-code"></i> Projects</a></li>
-      <li><a href="#blog"><i class="fas fa-newspaper"></i> Blog</a></li>
-      <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
-    </ul>
-  </nav>
-  <div class="container content-container">
-    <!-- CONTACT SECTION -->
-    <section id="contact">
-      <div class="contact-item">
-        <i class="fas fa-envelope"></i>
-        <p>Email: <a href="mailto:sener00omerfaruk@gmail.com">sener00omerfaruk@gmail.com</a></p>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-content">
+        <p>&copy; Feb 2025 Ömer Faruk Şener | Future Aspiring Cloud Engineer</p>
+        <p>Built with AWS S3, CloudFront, Lambda, and DynamoDB</p>
       </div>
-      <div class="contact-item">
-        <i class="fab fa-linkedin"></i>
-        <p>LinkedIn: <a href="https://www.linkedin.com/in/omerfaruksener/" target="_blank">omerfaruksener</a></p>
-      </div>
-      <div class="contact-item">
-        <i class="fab fa-github"></i>
-        <p>GitHub: <a href="https://github.com/ofSener" target="_blank">ofSener</a></p>
-      </div>
-    </section>
-    <!-- ABOUT SECTION -->
-    <section id="about">
-      <h3>About Me</h3>
-      <p>I'm a "human computer": when there's a problem, my mind compiles solutions faster than you can say "Hello World!"</p>
-      <p>Motivated and detail-oriented professional with a strong background in network engineering and a passion for cloud computing. Currently expanding my expertise in AWS, DevOps, and serverless architectures through hands-on projects and continuous learning. I excel at optimizing system performance and finding innovative solutions to complex technical challenges.</p>
-    </section>
-    <!-- SKILLS SECTION -->
-    <section id="skills">
-      <h3>Technical Skills</h3>
-      <ul>
-        <li>AWS Services: S3, CloudFront, Lambda, DynamoDB</li>
-        <li>Cloud Infrastructure &amp; Serverless Architecture</li>
-        <li>Network Design &amp; Implementation</li>
-        <li>Python Programming</li>
-        <li>C/C++ Development</li>
-        <li>Golang</li>
-        <li>Lisp &amp; Prolog</li>
-        <li>HTML/CSS</li>
-        <li>CI/CD with GitHub Actions</li>
-        <li>Problem-Solving</li>
-        <li>Team Collaboration</li>
-        <li>Technical Support</li>
-      </ul>
-    </section>
-    <!-- EXPERIENCE SECTION -->
-    <section id="experience">
-      <h3>Professional Experience</h3>
-      <div class="job-item">
-        <div class="job-header">
-          <div class="company-name">AkbimNet</div>
-          <div class="job-date">2017 - Present</div>
-        </div>
-        <div class="job-title">Network Implementation &amp; Support Engineer</div>
-        <ul>
-          <li>Spearheaded the design and deployment of a newly acquired ISP's network infrastructure, growing the customer base from 20 to over 2,000.</li>
-          <li>Implemented performance optimization strategies that increased network reliability by 30% and reduced downtime incidents.</li>
-          <li>Provided direct technical support to end users, resolving an average of 30 complex network issues weekly.</li>
-          <li>Collaborated with cross-functional teams to design and implement scalable network solutions.</li>
-        </ul>
-      </div>
-      <div class="job-item">
-        <div class="job-header">
-          <div class="company-name">MayaICT</div>
-          <div class="job-date">Summer 2022</div>
-        </div>
-        <div class="job-title">Summer Intern</div>
-        <ul>
-          <li>Developed proficiency in advanced computer networking concepts and protocols.</li>
-          <li>Designed and implemented a TCP/IP server project from concept to deployment.</li>
-          <li>Created and delivered a professional sales presentation for Palo Alto firewall solutions.</li>
-          <li>Participated in team-based troubleshooting and problem-solving scenarios.</li>
-        </ul>
-      </div>
-    </section>
-    <!-- EDUCATION SECTION -->
-    <section id="education">
-      <h3>Education</h3>
-      <div class="edu-item">
-        <div class="edu-header">
-          <div class="institution-name">Gebze Technical University</div>
-          <div class="edu-date">2025 (Expected)</div>
-        </div>
-        <div class="degree">B.Sc. in Computer Engineering</div>
-      </div>
-    </section>
-    <!-- CERTIFICATIONS SECTION -->
-    <section id="certifications">
-      <h3>Certifications</h3>
-      <ul>
-        <li><i class="fab fa-aws"></i> AWS Certified Cloud Practitioner (in progress)</li>
-        <li><i class="fas fa-shield-alt"></i> CyberSecurity for Everyone</li>
-        <li><i class="fas fa-lock"></i> Usable Security</li>
-      </ul>
-    </section>
-    <!-- PROJECTS SECTION (dynamically filled via script) -->
-    <section id="projects">
-      <h3>Projects</h3>
-      <div id="projects-container" class="projects-container">
-        <!-- Projects will be populated by script -->
-      </div>
-    </section>
-    <!-- BLOG SECTION -->
-    <section id="blog">
-      <h3>Blog</h3>
-      <div class="blog-container">
-        <article class="blog-post">
-          <h4><a href="#">Completing the Cloud Resume Challenge</a></h4>
-          <p>Reflections on building a cloud-based personal resume with AWS.</p>
-          <small>Feb 15, 2025</small>
-        </article>
-        <article class="blog-post">
-          <h4><a href="#">My Journey from Network Engineering to Cloud Computing</a></h4>
-          <p>How I transitioned my career from traditional networking to cloud engineering.</p>
-          <small>Jan 10, 2025</small>
-        </article>
-      </div>
-    </section>
-    <!-- VISITOR COUNTER SECTION -->
-    <section id="visitor-counter">
-      <h3>Visitor Counter</h3>
-      <p>You are visitor number <span id="visitor-count">Loading...</span></p>
-    </section>
+    </footer>
   </div>
-  <!-- FOOTER SECTION -->
-  <footer>
-    <div class="container">
-      <p>&copy; Feb 2025 Ömer Faruk Şener | Future Aspiring Cloud Engineer</p>
-      <p>This resume was built with AWS S3, CloudFront, Lambda, and DynamoDB</p>
-    </div>
-  </footer>
-  <!-- JavaScript File -->
+
+  <!-- JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
